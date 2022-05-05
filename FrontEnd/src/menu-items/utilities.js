@@ -45,15 +45,31 @@ const utilities = {
             type: 'item',
             url: '/sales-report',
             icon: icons.BarcodeOutlined
+        },
+        {
+            id: 'util-stocks',
+            title: 'Products',
+            type: 'item',
+            url: '/products',
+            icon: icons.AntDesignOutlined,
+            breadcrumbs: false
+        },
+        {
+            id: 'util-stocks-sold',
+            title: 'Products Sold',
+            type: 'item',
+            url: '/products-sold',
+            icon: icons.AntDesignOutlined,
+            breadcrumbs: false
+        },
+        {
+            id: 'util-stocks-purchased',
+            title: 'Products Purchased',
+            type: 'item',
+            url: '/products-purchased',
+            icon: icons.AntDesignOutlined,
+            breadcrumbs: false
         }
-        // {
-        //     id: 'ant-icons',
-        //     title: 'Ant Icons',
-        //     type: 'item',
-        //     url: '/icons/ant',
-        //     icon: icons.AntDesignOutlined,
-        //     breadcrumbs: false
-        // }
     ]
 };
 

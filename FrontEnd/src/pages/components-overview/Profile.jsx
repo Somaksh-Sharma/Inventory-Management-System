@@ -1,31 +1,31 @@
 import React from 'react';
-// import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 // // material
-// import {
-//     Grid,
-//     Button,
-//     Card,
-//     Container,
-//     Stack,
-//     Typography,
-//     CardContent,
-//     Avatar,
-//     Box,
-//     Divider,
-//     TextField,
-//     IconButton,
-//     InputAdornment
-// } from '@mui/material';
+ import {
+     Grid,
+     Button,
+     Card,
+     Container,
+     Stack,
+     Typography,
+     CardContent,
+     Avatar,
+     Box,
+     Divider,
+     TextField,
+     IconButton,
+     InputAdornment
+ } from '@mui/material';
 // // components
  import MainCard from '../../components/MainCard';
 
-// import * as Yup from 'yup';
-// import { useState } from 'react';
-// import { useFormik, Form, FormikProvider } from 'formik';
+import * as Yup from 'yup';
+import { useState } from 'react';
+import { useFormik, Form, FormikProvider } from 'formik';
 
-// import { LoadingButton } from '@mui/lab';
+import { LoadingButton } from '@mui/lab';
 
-export const Profile = () => {
+const Profile = () => {
     const user = {
         name: 'Somaksh Sharma',
         avatar: '/static/mock-images/avatars/avatar_default.jpg',
@@ -33,41 +33,41 @@ export const Profile = () => {
         phoneNo: '9814753684'
     };
 
-    // const [isEdit, setIsEdit] = useState(true);
+    const [isEdit, setIsEdit] = useState(true);
 
-    // const [disableEmail, setDisableEmail] = useState(true);
+    const [disableEmail, setDisableEmail] = useState(true);
 
-    // const navigate = useNavigate();
+    const navigate = useNavigate();
 
-    // const UserDetails = Yup.object().shape({
-    //     fullName: Yup.string().min(2, 'Too Short!').max(50, 'Too Long!'),
-    //     phoneNo: Yup.string().min(8, 'Too Short!').max(12, 'Too Long!')
-    // });
+    const UserDetails = Yup.object().shape({
+        fullName: Yup.string().min(2, 'Too Short!').max(50, 'Too Long!'),
+        phoneNo: Yup.string().min(8, 'Too Short!').max(12, 'Too Long!')
+    });
 
-    // const [showPassword, setShowPassword] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
-    // const formik = useFormik({
-    //     initialValues: {
-    //         fullName: user.name,
-    //         phoneNo: user.phoneNo,
-    //         email: user.email,
-    //         password: ''
-    //     },
-    //     validationSchema: UserDetails,
-    //     onSubmit: (values) => {
-    //         alert(JSON.stringify(values));
-    //     }
-    // });
+    const formik = useFormik({
+        initialValues: {
+            fullName: user.name,
+            phoneNo: user.phoneNo,
+            email: user.email,
+            password: ''
+        },
+        validationSchema: UserDetails,
+        onSubmit: (values) => {
+            alert(JSON.stringify(values));
+        }
+    });
 
-    // const handleEdit = () => {
-    //     setIsEdit(true);
-    // };
+    const handleEdit = () => {
+        setIsEdit(true);
+    };
 
-    // const { errors, touched, handleSubmit, isSubmitting, getFieldProps } = formik;
+    const { errors, touched, handleSubmit, isSubmitting, getFieldProps } = formik;
 
     return (
          <MainCard title="Dashboard: Profile">
-            {/* <Container>
+            <Container>
                 <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
               <Typography variant="h4" gutterBottom>
                 Account
@@ -102,7 +102,7 @@ export const Profile = () => {
                         }}
                       />
 
-                      <Divider variant="middle" /> */}
+                      <Divider variant="middle" />
 
                       <Typography color="textPrimary" gutterBottom variant="h5">
                         {user.name}
@@ -113,7 +113,7 @@ export const Profile = () => {
                       <Typography color="textSecondary" variant="body2">
                         {user.phoneNo}
                       </Typography>
-                    {/* </Box>
+                    </Box>
                   </CardContent>
                   <Divider />
                 </Card>
@@ -180,13 +180,13 @@ export const Profile = () => {
                                                               ? 'eva:eye-fill'
                                                               : 'eva:eye-off-fill'
                                                           }/> */}
-                                                        {/* </IconButton>
+                                                        </IconButton>
                                                         </InputAdornment>
                                                     )
                                                 }}
                                                 error={Boolean(touched.password && errors.password)}
                                                 helperText={touched.password && errors.password}
-                                            /> */}
+                                            />
 
                                             {/* <LoadingButton
                                             fullWidth
@@ -197,14 +197,16 @@ export const Profile = () => {
                                           >
                                             Register
                                           </LoadingButton> */}
-            {/* //                             </Stack> */} */
-            {/* //                         </Form> */}
-            {/* //                     </FormikProvider> */}
-            {/* //                 </Grid> */}
-            {/* //             </Card> */}
-            {/* //         </Grid> */}
-            {/* //     </Grid> */}
-            {/* // </Container> */}
+                                         </Stack> 
+                                     </Form>
+                                 </FormikProvider>
+                             </Grid>
+                         </Card>
+                     </Grid>
+                 </Grid>
+            </Container>
          </MainCard>
     );
 };
+
+export default Profile;
