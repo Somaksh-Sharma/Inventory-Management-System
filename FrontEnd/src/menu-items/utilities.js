@@ -69,6 +69,22 @@ const utilities = {
             url: '/products-purchased',
             icon: icons.AntDesignOutlined,
             breadcrumbs: false
+        },
+        {
+            id: 'util-bills',
+            title: 'Bills',
+            type: 'item',
+            url: '/bills',
+            icon: icons.BarcodeOutlined,
+            breadcrumbs: false
+        },
+        {
+            id: 'util-reciepts',
+            title: 'Receipts',
+            type: 'item',
+            url: '/receipts',
+            icon: icons.BarcodeOutlined,
+            breadcrumbs: false
         }
     ]
 };

@@ -18,6 +18,7 @@ import { Link as RouterLink, useNavigate } from 'react-router-dom';
  } from '@mui/material';
 // // components
  import MainCard from '../../components/MainCard';
+ import Iconify from 'components/Iconify';
 
 import * as Yup from 'yup';
 import { useState } from 'react';
@@ -76,7 +77,7 @@ const Profile = () => {
                 variant="contained"
                 component={RouterLink}
                 to="#"
-                // startIcon={<Iconify icon="ci:edit" />}
+                startIcon={<Iconify icon="ci:edit" />}
                 onClick={handleEdit}
               >
                 Edit Details
@@ -174,12 +175,12 @@ const Profile = () => {
                                                         edge="end"
                                                         onClick={() => setShowPassword((prev) => !prev)}
                                                       >
-                                                        {/* <Iconify
+                                                        <Iconify
                                                           icon={
                                                             showPassword
                                                               ? 'eva:eye-fill'
                                                               : 'eva:eye-off-fill'
-                                                          }/> */}
+                                                          }/>
                                                         </IconButton>
                                                         </InputAdornment>
                                                     )

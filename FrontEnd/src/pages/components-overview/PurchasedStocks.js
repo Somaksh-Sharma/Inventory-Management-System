@@ -22,7 +22,7 @@ import {
 // components
 import MainCard from './../../components/MainCard';
 //import Scrollbar from '../components/Scrollbar';
-// import Iconify from '../components/Iconify';
+import Iconify from './../../components/Iconify';
 // import SearchNotFound from '../components/SearchNotFound';
 import {
   StockListHead,
@@ -164,7 +164,7 @@ const PurchasedStocks = () => {
             variant="contained"
             component={RouterLink}
             to="/dashboard/createstock"
-            // startIcon={<Iconify icon="eva:plus-fill" />}
+            startIcon={<Iconify icon="eva:plus-fill" />}
           >
             Add Stock
           </Button>

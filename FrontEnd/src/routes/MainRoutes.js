@@ -4,6 +4,7 @@ import { lazy } from 'react';
 import Loadable from 'components/Loadable';
 import MainLayout from 'layout/MainLayout';
 import { SoldStocks } from 'pages/components-overview/SoldStocks';
+import { element } from 'prop-types';
 
 // render - dashboard
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard')));
@@ -19,6 +20,8 @@ const Products = Loadable(lazy(() => import('pages/components-overview/stocks'))
 const CreateStock = Loadable(lazy(() => import('pages/components-overview/CreateStock')));
 const SoldStock = Loadable(lazy(() => import('pages/components-overview/SoldStocks')));
 const PurchasedStock = Loadable(lazy(() => import('pages/components-overview/PurchasedStocks')));
+const Bills = Loadable(lazy(() => import('pages/components-overview/Bill')));
+const Receipts = Loadable(lazy(() => import('pages/components-overview/Receipts')));
 
 
 // ==============================|| MAIN ROUTING ||============================== //
@@ -71,6 +74,14 @@ const MainRoutes = {
         {
             path: 'products-purchased',
             element: <PurchasedStock />
+        },
+        {
+            path: 'bills',
+            element: <Bills />
+        },
+        {
+            path: 'receipts',
+            element: <Receipts />
         }
     ]
 };
