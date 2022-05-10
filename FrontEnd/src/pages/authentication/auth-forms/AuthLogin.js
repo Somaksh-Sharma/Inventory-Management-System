@@ -28,10 +28,25 @@ import AnimateButton from 'components/@extended/AnimateButton';
 
 // assets
 import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
-
+// import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+// import { addAuth } from 'store/authStore';
+// import { addUser } from 'store/store';
+import Cookies from 'js-cookie';
+import axios from 'axios';
 // ============================|| FIREBASE - LOGIN ||============================ //
 
 const AuthLogin = () => {
+  const options = {
+    headers: { 'Content-Type': 'application/json' },
+    withCredentials: true,
+    credentials: 'include',
+  };
+  const navigate = useNavigate();
+
+  // const userDispatcher = useDispatch();
+  // const authDispatcher = useDispatch();
+
   const [checked, setChecked] = React.useState(false);
 
   const [showPassword, setShowPassword] = React.useState(false);
@@ -60,9 +75,36 @@ const AuthLogin = () => {
         })}
         onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
           try {
-            alert(JSON.stringify(values));
+            // alert(JSON.stringify(values, null, 2));
+
+            const { data } = await axios.post(
+              'http://localhost:5000/api/admin/loginAdmin',
+              {
+                data: {
+                  email: values.email,
+                  password: values.password,
+                },
+              },
+              options
+            );
+
+            console.log(data);
+
+            // authDispatcher(addAuth(true));
+
+            // userDispatcher(addUser(data.adminDetails));
+
+            Cookies.set('user', JSON.stringify(data.adminDetails), {
+              expires: 1,
+            });
+            Cookies.set('auth', JSON.stringify({ isAuth: true }), {
+              expires: 1,
+            });
+
             setStatus({ success: false });
             setSubmitting(false);
+
+            navigate('/home/dashboard');
           } catch (err) {
             setStatus({ success: false });
             setErrors({ submit: err.message });

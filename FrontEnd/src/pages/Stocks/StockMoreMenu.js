@@ -8,19 +8,32 @@ import {
   ListItemIcon,
   ListItemText,
 } from '@mui/material';
+
+import SellRoundedIcon from '@mui/icons-material/SellRounded';
+import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
 // component
+import SellIcon from '@mui/icons-material/Sell';
 //import Iconify from '../../../components/Iconify';
 
 // ----------------------------------------------------------------------
 
-export default function UserMoreMenu(props) {
+export default function UserMoreMenu({
+  refId,
+  refName,
+  handleModalOpen,
+  formik,
+  handleModalClose,
+  setSnackColor,
+  setSnackMessage,
+  setSnackOpen,
+}) {
   const ref = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
 
   return (
     <>
       <IconButton ref={ref} onClick={() => setIsOpen(true)}>
-        {/* <Iconify icon="eva:more-vertical-fill" width={20} height={20} /> */}
+        <MoreVertRoundedIcon />
       </IconButton>
 
       <Menu
@@ -33,30 +46,20 @@ export default function UserMoreMenu(props) {
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
-        <MenuItem sx={{ color: 'text.secondary' }}>
-          <ListItemIcon>
-            {/* <Iconify icon="eva:trash-2-outline" width={24} height={24} /> */}
-          </ListItemIcon>
-          <ListItemText
-            primary="Delete"
-            primaryTypographyProps={{ variant: 'body2' }}
-          />
-        </MenuItem>
-
         <MenuItem
-          onClick={() => {
-            console.log(props.refId);
-            alert('Edited!');
-          }}
-          component={RouterLink}
-          to="#"
           sx={{ color: 'text.secondary' }}
+          onClick={() => {
+            formik.values.stockId = refId;
+            formik.values.name = refName;
+            handleModalOpen();
+            setIsOpen(false);
+          }}
         >
           <ListItemIcon>
-            {/* <Iconify icon="eva:edit-fill" width={24} height={24} /> */}
+            <SellRoundedIcon />
           </ListItemIcon>
           <ListItemText
-            primary="Edit"
+            primary="Sell"
             primaryTypographyProps={{ variant: 'body2' }}
           />
         </MenuItem>

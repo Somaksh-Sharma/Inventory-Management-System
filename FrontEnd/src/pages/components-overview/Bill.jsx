@@ -10,6 +10,7 @@ import {
   Typography,
   Alert,
   Snackbar,
+  Box,
 } from '@mui/material';
 // components
 import MainCard from './../../components/MainCard';
@@ -93,15 +94,26 @@ const Bill = () => {
           </Typography>
         </Stack>
 
-        <Stack
+        {/* <Stack
           mb={5}
           direction="row"
           alignItems="center"
           justifyContent="space-between"
+        > */}
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'row-reverse',
+            p: 1,
+            m: 1,
+            bgcolor: 'background.paper',
+            borderRadius: 1,
+          }}
         >
-          <BillSearch posts={billData} />
+          {/* <BillSearch posts={billData} /> */}
           <BillSort options={SORT_OPTIONS} />
-        </Stack>
+        </Box>
+        {/* </Stack> */}
 
         {/* <ScrollBar> */}
         <Grid container spacing={3}>

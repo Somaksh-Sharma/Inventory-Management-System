@@ -39,8 +39,8 @@ const TitleStyle = styled(Link)({
 
 const AvatarStyle = styled(Avatar)(({ theme }) => ({
   zIndex: 9,
-  width: 32,
-  height: 32,
+  width: 48,
+  height: 48,
   position: 'absolute',
   left: theme.spacing(3),
   bottom: theme.spacing(-2),
@@ -96,9 +96,9 @@ export default function BillCard({ post, index }) {
       // sm={latestPostLarge ? 12 : 6}
       sm={12}
       // md={latestPostLarge ? 6 : 3}
-      md={6}
+      md={3}
     >
-      <Card sx={{ position: 'relative' }}>
+      <Card sx={{ position: 'relative', borderRadius: '16px' }}>
         <CardMediaStyle>
           <SvgIconStyle
             color="paper"
@@ -117,10 +117,7 @@ export default function BillCard({ post, index }) {
             src={`/static/mock-images/avatars/avatar_${index + 1}.jpg`}
           />
 
-          <CoverImgStyle
-            alt={name}
-            src={`/static/mock-images/covers/cover_${index + 1}.jpg`}
-          />
+          <CoverImgStyle alt={name} src={'/static/cover/cover.jpg'} />
         </CardMediaStyle>
 
         <CardContent

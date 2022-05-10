@@ -12,6 +12,7 @@ const { v4: uuidv4 } = require('uuid');
 const SoldStocks = require('../../models/SoldStocks');
 const SellPayments = require('../../models/SellPayments');
 const comparePasswords = require('../../Utils/comparePassword');
+const jwt = require('jsonwebtoken');
 
 const getCatergoriesObject = async () => {
   try {
@@ -35,10 +36,17 @@ const registerAdmin = async (req, res) => {
 
   try {
     const finAdmin = await Admin.findOne({ email });
+    const findAdmin = await Admin.findOne({ phoneNo });
     if (finAdmin) {
       res.status(405).json({
         success: false,
-        error: 'Admin with specified email already exist!',
+        error: 'Admin with specified email already exists!',
+      });
+      return;
+    } else if (findAdmin) {
+      res.status(405).json({
+        success: false,
+        error: 'Admin with specified phoneNo already exists!',
       });
       return;
     } else {
@@ -58,6 +66,8 @@ const registerAdmin = async (req, res) => {
         emailTokenExpire: Date.now() + 5 * (60 * 1000),
         isVerified,
       });
+
+      // console.log(createdAdmin);
 
       const verificationUrl = `http://${emailDomain}/api/admin/verify-email/${emailVerificationToken}`;
 
@@ -112,12 +122,51 @@ const loginAdmin = async (req, res) => {
       return;
     }
 
-    req.session.isAuth = true;
-    req.session.bearerToken = process.env.ADMIN_TOKEN;
+    // req.session.isAuth = true;
+    const token = jwt.sign(
+      { bearerToken: process.env.ADMIN_TOKEN },
+      process.env.SECRET_KEY
+    );
+
+    res.cookie('isAuth', token, {
+      maxAge: 86400000,
+      httpOnly: true,
+    });
 
     res.status(200).json({
       success: true,
       message: 'Admin logged in successfully!',
+      adminDetails: {
+        name: findAdmin.name,
+        email: findAdmin.email,
+        isVerified: findAdmin.isVerified,
+        phoneNo: findAdmin.phoneNo,
+        id: findAdmin._id,
+      },
+    });
+  } catch (err) {
+    log.info(err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+};
+
+const getAdminDetails = async (req, res) => {
+  const { email } = req.params;
+  try {
+    const findAdmin = await Admin.findOne({ email });
+
+    const result = {
+      name: findAdmin.name,
+      email: findAdmin.email,
+      phoneNo: findAdmin.phoneNo,
+      isVerified: findAdmin.isVerified,
+      id: findAdmin._id,
+    };
+
+    res.status(200).json({
+      success: true,
+      message: 'Admin details fetched successfully!',
+      data: result,
     });
   } catch (err) {
     log.info(err);
@@ -131,6 +180,7 @@ const logoutAdmin = async (req, res) => {
       if (e) {
         throw e;
       }
+      res.clearCookie('isAuth');
       res.status(200).json({
         success: true,
         message: 'Admin logged out successfully!',
@@ -199,6 +249,8 @@ const verifyAdmin = async (req, res) => {
     .update(req.params.emailToken)
     .digest('hex');
 
+  // console.log(verifyEmailToken);
+
   try {
     const result = await Admin.findOne({
       emailToken: verifyEmailToken,
@@ -239,6 +291,13 @@ const updateAdminDetails = async (req, res) => {
   const { dataToUpdate, email } = req.body.data;
 
   try {
+    if (dataToUpdate.email || dataToUpdate.password) {
+      res
+        .status(400)
+        .json({ success: false, error: 'Email can not be changed!' });
+      return;
+    }
+
     const findAdmin = await Admin.findOne({ email });
 
     if (!findAdmin) {
@@ -250,10 +309,18 @@ const updateAdminDetails = async (req, res) => {
         { new: true }
       );
 
+      const result = {
+        name: updatedAdmin.name,
+        email: updatedAdmin.email,
+        phoneNo: updatedAdmin.phoneNo,
+        isVerified: updatedAdmin.isVerified,
+        id: updatedAdmin._id,
+      };
+
       res.status(201).json({
         success: true,
         message: 'Admin details updated successfully!',
-        data: updatedAdmin,
+        data: result,
       });
     }
   } catch (err) {
@@ -263,6 +330,7 @@ const updateAdminDetails = async (req, res) => {
 };
 
 const createNewCategory = async (req, res) => {
+  //Set predefined Categories
   const { category } = req.body.data;
 
   try {
@@ -554,6 +622,27 @@ const sellStock = async (req, res) => {
   await session.endSession();
 };
 
+const getAllStocks = async (req, res) => {
+  try {
+    const allStocks = await Stock.find().populate('category');
+
+    if (!allStocks) {
+      res
+        .status(404)
+        .json({ success: false, error: 'No stocks in current inventory!' });
+      return;
+    }
+    res.status(200).json({
+      success: true,
+      message: 'Current stocks fetched successfully!',
+      data: allStocks,
+    });
+  } catch (err) {
+    log.info(err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+};
+
 const getStockByCategory = async (req, res) => {
   try {
     let finalRes = {};
@@ -620,6 +709,26 @@ const getPurchasedStocks = async (req, res) => {
   }
 };
 
+const getAllPurchasedStock = async (req, res) => {
+  try {
+    const allStocks = await PurchasedStocks.find().populate('category');
+    if (!allStocks) {
+      res
+        .status(404)
+        .json({ success: false, error: 'No stocks in current inventory!' });
+      return;
+    }
+    res.status(200).json({
+      success: true,
+      message: 'Purchased Stocks fetched successfully!',
+      data: allStocks,
+    });
+  } catch (err) {
+    log.info(err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+};
+
 const getSoldStocks = async (req, res) => {
   try {
     const categories = await getCatergoriesObject();
@@ -638,6 +747,26 @@ const getSoldStocks = async (req, res) => {
       success: true,
       message: 'All sold stocks fetched successfully!',
       data: returnObj,
+    });
+  } catch (err) {
+    log.info(err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+};
+
+const getAllSoldStocks = async (req, res) => {
+  try {
+    const allStocks = await SoldStocks.find().populate('category');
+    if (!allStocks) {
+      res
+        .status(404)
+        .json({ success: false, error: 'No stocks in current inventory!' });
+      return;
+    }
+    res.status(200).json({
+      success: true,
+      message: 'Sold Stocks fetched successfully!',
+      data: allStocks,
     });
   } catch (err) {
     log.info(err);
@@ -791,6 +920,48 @@ const resetPassword = async (req, res) => {
   }
 };
 
+const updatePassword = async (req, res) => {
+  const { email, oldPassword, newPassword } = req.body.data;
+  try {
+    const findAdmin = await Admin.findOne({ email });
+    if (!findAdmin) {
+      res
+        .status(404)
+        .json({ success: false, error: 'No admin with given email exists!' });
+      return;
+    }
+
+    const matchPassword = comparePasswords(oldPassword, findAdmin.password);
+
+    if (!matchPassword) {
+      res.status(400).json({
+        success: false,
+        error: 'Wrong old password entered!',
+      });
+      return;
+    }
+
+    const hashedNewPassword = textToHash(newPassword);
+
+    const updatedPassword = await Admin.findOneAndUpdate(
+      { email },
+      {
+        $set: {
+          password: hashedNewPassword,
+        },
+      },
+      { new: true }
+    );
+
+    res
+      .status(200)
+      .json({ success: true, message: 'Password updated successfully!' });
+  } catch (err) {
+    log.info(err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+};
+
 module.exports = {
   registerAdmin,
   loginAdmin,
@@ -809,4 +980,9 @@ module.exports = {
   updateAdminDetails,
   forgotPassword,
   resetPassword,
+  getAllStocks,
+  getAllPurchasedStock,
+  getAllSoldStocks,
+  updatePassword,
+  getAdminDetails,
 };

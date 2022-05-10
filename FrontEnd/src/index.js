@@ -7,6 +7,7 @@ import 'simplebar/src/simplebar.css';
 
 // third-party
 import { Provider as ReduxProvider } from 'react-redux';
+import { configureStore } from '@reduxjs/toolkit';
 
 // apex-chart
 import 'assets/third-party/apex-chart.css';
@@ -18,15 +19,27 @@ import reportWebVitals from './reportWebVitals';
 
 // ==============================|| MAIN - REACT DOM RENDER  ||============================== //
 
+import userReducer from './store/store';
+import authReducer from './store/authStore';
+
+const customStore = configureStore({
+  reducer: {
+    user: userReducer,
+    auth: authReducer,
+  },
+});
+
 ReactDOM.render(
-    <StrictMode>
-        <ReduxProvider store={store}>
-            <BrowserRouter basename="/">
-                <App />
-            </BrowserRouter>
-        </ReduxProvider>
-    </StrictMode>,
-    document.getElementById('root')
+  // <StrictMode>
+  <ReduxProvider store={store}>
+    {/* <ReduxProvider store={customStore}> */}
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    {/* </ReduxProvider> */}
+  </ReduxProvider>,
+  // </StrictMode>,
+  document.getElementById('root')
 );
 
 // If you want to start measuring performance in your app, pass a function

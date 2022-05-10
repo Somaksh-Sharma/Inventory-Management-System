@@ -8,9 +8,11 @@ const connectDB = require('./Db/db');
 const log = require('./Utils/Logger');
 const compression = require('compression');
 const { adminRouter, userRouter } = require('./routes');
-
+const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const mongoStore = require('connect-mongo');
+
+const corsOptionsDelegate = require('./Utils/cors');
 
 connectDB();
 
@@ -26,15 +28,16 @@ const store = mongoStore.create({
 });
 
 app.use(compression());
-app.use(cors());
+app.use(cors(corsOptionsDelegate));
 app.use(express.json());
+app.use(cookieParser());
 
 // app.set('trust proxy', 1);
 app.use(
   session({
     secret: process.env.SECRET_KEY,
     cookie: {
-      httpOnly: true,
+      // httpOnly: true,
       // secure: true,
       maxAge: 86400000,
       sameSite: 'none',
@@ -53,7 +56,7 @@ const server = app.listen(PORT, () =>
   log.info(`Server running on ${PORT}`.bold)
 );
 
-process.on('unhandledRejection', (err, promise) => {
-  log.info(`Error occured!: ${err}`.red.bold);
-  server.close(() => process.exit());
-});
+// process.on('unhandledRejection', (err, promise) => {
+//   log.info(`Error occured!: ${err}`.red.bold);
+//   server.close(() => process.exit());
+// });

@@ -1,5 +1,3 @@
-// project import
-// import Routes from 'routes';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import ThemeCustomization from 'themes';
 import ScrollTop from 'components/ScrollTop';
@@ -54,7 +52,6 @@ const AuthRegister = Loadable(
 const App = () => (
   <ThemeCustomization>
     <ScrollTop>
-      {/* <Routes /> */}
       <Routes>
         <Route path="/" element={<MinimalLayout />}>
           <Route exact path="login" element={<AuthLogin />} />
@@ -63,6 +60,20 @@ const App = () => (
         <Route element={<Protected />}>
           <Route exact path="/home" element={<MainLayout />}>
             <Route exact path="dashboard" element={<DashboardDefault />} />
+            <Route exact path="recent-orders" element={<RecentOrders />} />
+            <Route exact path="sales-report" element={<SalesReport />} />
+            <Route exact path="products-sold" element={<SoldStock />} />
+            <Route
+              exact
+              path="products-purchased"
+              element={<PurchasedStock />}
+            />
+            <Route exact path="bills" element={<Bills />} />
+            <Route exact path="receipts" element={<Receipts />} />
+            <Route exact path="products" element={<Products />} />
+            <Route exact path="createStock" element={<CreateStock />} />
+
+
             <Route exact path="profile" element={<Profile />} />
           </Route>
         </Route>

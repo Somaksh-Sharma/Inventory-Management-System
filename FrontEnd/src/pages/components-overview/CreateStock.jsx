@@ -74,7 +74,12 @@ const CreateStock = () => {
   //   const
   // },[])
 
-  const categories = ['Health', 'Electronics', 'Gym', 'Stationary'];
+  const categories = [
+    'Computer Accessories',
+    'Furniture',
+    'Daily Essentials',
+    'Sanitary',
+  ];
 
   const navigate = useNavigate();
 
@@ -135,7 +140,7 @@ const CreateStock = () => {
         setSnackMessage(data.message);
         setSnackOpen(true);
         await sleep(3000);
-        navigate('/products', { replace: true });
+        navigate('/home/products', { replace: true });
       } catch (err) {
         setSnackColor('error');
         setSnackMessage(err?.response?.data?.error);

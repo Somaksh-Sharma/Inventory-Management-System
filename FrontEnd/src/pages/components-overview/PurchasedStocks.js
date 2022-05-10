@@ -1,7 +1,7 @@
 import { format } from 'date-fns';
 import { filter } from 'lodash';
 import { sentenceCase } from 'change-case';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 // material
 import {
@@ -21,17 +21,13 @@ import {
 } from '@mui/material';
 // components
 import MainCard from './../../components/MainCard';
-//import Scrollbar from '../components/Scrollbar';
-import Iconify from './../../components/Iconify';
-// import SearchNotFound from '../components/SearchNotFound';
-import {
-  StockListHead,
-  StockListToolbar,
-  StockMoreMenu,
-} from './../Stocks';
+//import ScrollToTop from './../../components/ScrollToTop';
+//import Iconify from '../components/Iconify';
+//import SearchNotFound from '../components/SearchNotFound';
+import { StockListHead, StockListToolbar, StockMoreMenu } from './../Stocks';
 // mock
 import USERLIST from './../../components/user';
-
+import axios from 'axios';
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
@@ -40,7 +36,7 @@ const TABLE_HEAD = [
   { id: 'category', label: 'Category', alignRight: false },
   { id: 'date', label: 'Date', alignRight: false },
   { id: 'amount', label: 'Amount', alignRight: false },
-  // { id: 'quantity', label: 'Quantity', alignRight: false },
+  { id: 'quantity', label: 'Quantity', alignRight: false },
 ];
 
 // ----------------------------------------------------------------------
@@ -78,7 +74,13 @@ function applySortFilter(array, comparator, query) {
 }
 
 const PurchasedStocks = () => {
-  const [Page, setPage] = useState(0);
+  const options = {
+    headers: { 'Content-Type': 'application/json' },
+    withCredentials: true,
+    credentials: 'include',
+  };
+
+  const [page, setPage] = useState(0);
 
   const [order, setOrder] = useState('asc');
 
@@ -90,6 +92,8 @@ const PurchasedStocks = () => {
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
+  const [stockData, setStockData] = useState([]);
+
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
@@ -98,7 +102,7 @@ const PurchasedStocks = () => {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = USERLIST.map((n) => n.name);
+      const newSelecteds = stockData.map((n) => n.name);
       setSelected(newSelecteds);
       return;
     }
@@ -138,18 +142,57 @@ const PurchasedStocks = () => {
   };
 
   const emptyRows =
-    Page > 0 ? Math.max(0, (1 + Page) * rowsPerPage - USERLIST.length) : 0;
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - stockData.length) : 0;
 
   const filteredUsers = applySortFilter(
-    USERLIST,
+    stockData,
     getComparator(order, orderBy),
     filterName
   );
 
   const isUserNotFound = filteredUsers.length === 0;
 
+  useEffect(() => {
+    const fetchStocks = async () => {
+      try {
+        const { data } = await axios.get(
+          'http://localhost:5000/api/admin/getAllPurchasedStocks',
+          options
+        );
+
+        const responsedata = data.data;
+        // console.log(responsedata);
+        const finalData = [];
+
+        responsedata.forEach((element, index) => {
+          const temp = {};
+
+          temp.name = element.name;
+          temp.id = element._id;
+          temp.date = new Date(element.datePurchased);
+          temp.amount = element.amount;
+          temp.quantity = element.quantity;
+          temp.seller = element.seller.name;
+          temp.category = element.category.name;
+          temp.avatarUrl = `/static/avatar/avatar.jpg`;
+
+          finalData.push(temp);
+        });
+
+        setStockData(finalData);
+      } catch (err) {
+        // setSnackColor('error');
+        // setSnackMessage(err?.response?.data?.error);
+        // setSnackOpen(true);
+        alert(err.message);
+      }
+    };
+
+    fetchStocks().then();
+  }, []);
+
   return (
-    <MainCard title="Purchased Stocks">
+    <MainCard title="Sold Stocks">
       <Container>
         <Stack
           direction="row"
@@ -158,46 +201,31 @@ const PurchasedStocks = () => {
           mb={5}
         >
           <Typography variant="h4" gutterBottom>
-            Purchased Stocks
+            Sold Stocks
           </Typography>
-          <Button
-            variant="contained"
-            component={RouterLink}
-            to="/dashboard/createstock"
-            startIcon={<Iconify icon="eva:plus-fill" />}
-          >
-            Add Stock
-          </Button>
         </Stack>
 
         <Card>
-          <StockListToolbar
-            numSelected={selected.length}
-            filterName={filterName}
-            onFilterName={handleFilterByName}
-          />
-
-          {/* <Scrollbar> */}
           <TableContainer sx={{ minWidth: 800 }}>
             <Table>
               <StockListHead
                 order={order}
                 orderBy={orderBy}
                 headLabel={TABLE_HEAD}
-                rowCount={USERLIST.length}
+                rowCount={stockData.length}
                 numSelected={selected.length}
                 onRequestSort={handleRequestSort}
                 onSelectAllClick={handleSelectAllClick}
               />
               <TableBody>
                 {filteredUsers
-                  .slice(Page * rowsPerPage, Page * rowsPerPage + rowsPerPage)
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row) => {
                     const {
                       id,
                       name,
                       category,
-                      company,
+                      seller,
                       avatarUrl,
                       quantity,
                       amount,
@@ -236,15 +264,11 @@ const PurchasedStocks = () => {
                             </Typography>
                           </Stack>
                         </TableCell>
-                        <TableCell align="left">{company}</TableCell>
+                        <TableCell align="left">{seller}</TableCell>
                         <TableCell align="left">{category}</TableCell>
                         <TableCell align="left">{dateAdded}</TableCell>
                         <TableCell align="left">{amount}</TableCell>
-                        {/* <TableCell align="left">{quantity}</TableCell> */}
-
-                        <TableCell align="right">
-                          <StockMoreMenu />
-                        </TableCell>
+                        <TableCell align="left">{quantity}</TableCell>
                       </TableRow>
                     );
                   })}
@@ -254,26 +278,15 @@ const PurchasedStocks = () => {
                   </TableRow>
                 )}
               </TableBody>
-
-              {isUserNotFound && (
-                <TableBody>
-                  <TableRow>
-                    <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
-                      <SearchNotFound searchQuery={filterName} />
-                    </TableCell>
-                  </TableRow>
-                </TableBody>
-              )}
             </Table>
           </TableContainer>
-          {/* </Scrollbar> */}
 
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={USERLIST.length}
+            count={stockData.length}
             rowsPerPage={rowsPerPage}
-            Page={Page}
+            page={page}
             onPageChange={handleChangePage}
             onRowsPerPageChange={handleChangeRowsPerPage}
           />

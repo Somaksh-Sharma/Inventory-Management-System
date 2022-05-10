@@ -7,7 +7,9 @@ const Protected = () => {
 
   let isAuth = userDetails ? true : false;
 
-  isAuth = true;
+  if (userDetails === undefined) isAuth = false;
+  else isAuth = true;
+  // isAuth = true;
 
   return isAuth ? <Outlet /> : <Navigate to={'/login'} />;
 };
